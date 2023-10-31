@@ -9,7 +9,7 @@
 
 | app         | host      | port |
 | ----------- | --------- | ---- |
-| **nest js** | localhost | 5000 |
+| **nestjs** | localhost | 5000 |
 | **postgress** | localhost | 5432 |
 | **adminer** | localhost | 8080 |
 
