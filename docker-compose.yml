@@ -1,0 +1,30 @@
+version: '3.1'
+
+services:
+  pgsql:
+    image: postgres:alpine
+    container_name: 'pgsql'
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-myuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mypassword}
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    networks:
+      - postgres
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - '8080:8080'
+    networks:
+      - postgres
+
+networks:
+  postgres:
+
+volumes:
+  pg-data:

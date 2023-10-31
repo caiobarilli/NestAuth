@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+str=$1
+pwd=$(pwd)
+
+# Up container
+if [ "$str" = "up" ]; then
+    docker-compose up
+fi
+
+# Up container detach mode
+if [ "$str" = "up:d" ]; then
+    docker-compose up -d
+fi
+
+# Down container
+if [ "$str" = "down" ]; then
+    docker-compose down
+fi
+

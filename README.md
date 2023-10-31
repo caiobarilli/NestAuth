@@ -16,8 +16,7 @@
 
 #
 
-Para começar, certifique-se de ter o [Docker](https://docs.docker.com/) e [Docker Compose](https://docs.docker.com/compose/install/) instalado no seu sistema.
-
+Para começar, certifique-se de ter o [Docker](https://docs.docker.com/), [Docker Compose](https://docs.docker.com/compose/install/), [Node.js](https://nodejs.org/) e o [NPM](https://www.npmjs.com/) instalados.
 
 ### Download
 
@@ -29,4 +28,30 @@ Faça o download do projeto com o comando:
 git clone git@github.com:caiobarilli/NestAuth.git
 ```
 
-<br />
+### Postgres
+
+#
+
+Crie um arquivo .env com base no .env.example:
+
+```shell
+cp .env.example .env
+```
+
+Suba o postgres com o comando:
+
+```shell
+sh ./postgres up
+```
+
+Acesse o adminer em [http://localhost:8080](http://localhost:8080)
+
+
+### NestJS
+
+#
+
+
+```shell
+yarn start:dev
+```
