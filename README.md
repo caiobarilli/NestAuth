@@ -9,7 +9,9 @@
 
 | app         | host      | port |
 | ----------- | --------- | ---- |
-| **NestJS** | localhost | 5000 |
+| **nest js** | localhost | 5000 |
+| **postgress** | localhost | 5432 |
+| **adminer** | localhost | 8080 |
 
 
 ### Pré-requisitos
@@ -43,9 +45,6 @@ Suba o postgres com o comando:
 ```shell
 sh ./postgres up
 ```
-
-Acesse o adminer em [http://localhost:8080](http://localhost:8080)
-
 
 ### NestJS
 
