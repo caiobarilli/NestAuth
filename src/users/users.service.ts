@@ -16,7 +16,6 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto, role: UserRole): Promise<User> {
     const { name, email, password } = createUserDto;
-
     const user = new User();
     user.name = name;
     user.email = email;
@@ -31,7 +30,7 @@ export class UsersService {
       delete user.salt;
       return user;
     } catch (error) {
-      throw new Error();
+      throw error;
     }
   }
 
@@ -39,7 +38,7 @@ export class UsersService {
     return this.userRepository.find();
   }
 
-  async findByEmail(email: string): Promise<User | undefined> {
+  async findByEmail(email: string): Promise<User | null> {
     return this.userRepository.findOne({ where: { email } });
   }
 

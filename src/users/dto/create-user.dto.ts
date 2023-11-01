@@ -1,11 +1,5 @@
-import {
-  MaxLength,
-  MinLength,
-  IsEmail,
-  IsNotEmpty,
-  Validate,
-} from 'class-validator';
-import { isPasswordConfirmationValid } from '@src/users/dto/custom-validators/password-confirmation.validator';
+import { MaxLength, MinLength, IsEmail, IsNotEmpty } from 'class-validator';
+import { isMatchPassword } from '@src/users/dto/custom-validators/match-password.validator';
 import { isEmailUnique } from './custom-validators/email-unique.validator';
 
 export class CreateUserDto {
@@ -40,7 +34,7 @@ export class CreateUserDto {
   })
   password: string;
 
-  @Validate(isPasswordConfirmationValid)
+  @isMatchPassword({ message: 'A confirmação de senha não confere' })
   @IsNotEmpty({
     message: 'Informe a confirmação de senha',
   })
