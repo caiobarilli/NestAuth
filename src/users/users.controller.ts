@@ -3,13 +3,16 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UserRole } from './user-roles.enum';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
+import { ReturnUserDto } from './dto/return-user.dto';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  async create(@Body(ValidationPipe) createUserDto: CreateUserDto) {
+  async create(
+    @Body(ValidationPipe) createUserDto: CreateUserDto,
+  ): Promise<ReturnUserDto> {
     const user = await this.usersService.create(createUserDto, UserRole.USER);
     return {
       user,
