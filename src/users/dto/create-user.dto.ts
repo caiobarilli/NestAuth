@@ -1,5 +1,5 @@
 import { MaxLength, MinLength, IsEmail, IsNotEmpty } from 'class-validator';
-import { isMatchPassword } from '@src/users/dto/custom-validators/match-password.validator';
+import { isMatchPassword } from './custom-validators/match-password.validator';
 import { isEmailUnique } from './custom-validators/email-unique.validator';
 
 export class CreateUserDto {
