@@ -19,11 +19,12 @@ export class UsersService {
     const user = new User();
     user.name = name;
     user.email = email;
-    user.password = password;
     user.role = role;
     user.status = true;
     user.confirmationToken = crypto.randomBytes(32).toString('hex');
     user.salt = await bcrypt.genSalt();
+    user.password = await this.hashPassword(password, user.salt);
+
     try {
       await user.save();
       delete user.password;
@@ -40,6 +41,10 @@ export class UsersService {
 
   async findByEmail(email: string): Promise<User | null> {
     return this.userRepository.findOne({ where: { email } });
+  }
+
+  private async hashPassword(password: string, salt: string): Promise<string> {
+    return bcrypt.hash(password, salt);
   }
 
   // findOne(id: number) {
