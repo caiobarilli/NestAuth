@@ -9,9 +9,9 @@ import { CreateUserDto } from '../create-user.dto';
 
 @ValidatorConstraint({ name: 'isMatchPassword', async: false })
 export class isMatchPasswordConstraint implements ValidatorConstraintInterface {
-  validate(password: string, args: ValidationArguments) {
+  validate(passwordConfirmation: string, args: ValidationArguments) {
     const dto: CreateUserDto = args.object as CreateUserDto;
-    return password === dto.password;
+    return passwordConfirmation === dto.password;
   }
 }
 

@@ -1,42 +1,20 @@
-import { Controller, Get, Post, Body, ValidationPipe } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UserRole } from './user-roles.enum';
-import { User } from './entities/user.entity';
+import { Body, Controller, Post, ValidationPipe } from '@nestjs/common';
 import { UsersService } from './users.service';
+import { CreateUserDto } from './dto/create-user.dto';
 import { ReturnUserDto } from './dto/return-user.dto';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private usersService: UsersService) {}
 
   @Post()
-  async create(
+  async createAdminUser(
     @Body(ValidationPipe) createUserDto: CreateUserDto,
   ): Promise<ReturnUserDto> {
-    const user = await this.usersService.create(createUserDto, UserRole.USER);
+    const user = await this.usersService.createAdminUser(createUserDto);
     return {
       user,
-      message: 'Usuario cadastrado com sucesso',
+      message: 'Administrador cadastrado com sucesso',
     };
   }
-
-  @Get()
-  findAll(): Promise<User[]> {
-    return this.usersService.findAll();
-  }
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.usersService.findOne(+id);
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-  //   return this.usersService.update(+id, updateUserDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.usersService.remove(+id);
-  // }
 }
