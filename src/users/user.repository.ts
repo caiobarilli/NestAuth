@@ -5,6 +5,10 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { CredentialsDto } from './dto/credetials.dto';
 import { UserRole } from './user-roles.enum';
+import {
+  ConflictException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 
 export class UserRepository extends Repository<User> {
   async createUser(
@@ -26,7 +30,13 @@ export class UserRepository extends Repository<User> {
       delete user.salt;
       return user;
     } catch (error) {
-      throw error;
+      if (error.code.toString() === '23505') {
+        throw new ConflictException('Endereço de email já está em uso');
+      } else {
+        throw new InternalServerErrorException(
+          'Erro ao salvar o usuário no banco de dados',
+        );
+      }
     }
   }
 

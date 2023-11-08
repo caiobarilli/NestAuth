@@ -1,6 +1,6 @@
 import { MaxLength, MinLength, IsEmail, IsNotEmpty } from 'class-validator';
 import { isMatchPassword } from './custom-validators/match-password.validator';
-import { isEmailUnique } from './custom-validators/email-unique.validator';
+// import { isEmailUnique } from './custom-validators/email-unique.validator';
 
 export class CreateUserDto {
   @IsNotEmpty({
@@ -12,7 +12,7 @@ export class CreateUserDto {
       message: 'Informe um endereço de email válido',
     },
   )
-  @isEmailUnique({ message: 'O endereço de email já está em uso' })
+  // @isEmailUnique({ message: 'O endereço de email já está em uso' })
   @MaxLength(200, {
     message: 'O endereço de email deve ter menos de 200 caracteres',
   })
