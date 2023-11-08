@@ -4,6 +4,7 @@ import { UserRole } from '@/users/user-roles.enum';
 import { User } from '@/users/entities/user.entity';
 import { UserRepository } from '@/users/user.repository';
 import { CreateUserDto } from '@/users/dto/create-user.dto';
+import { CredentialsDto } from '@/users/dto/credetials.dto';
 
 @Injectable()
 export class AuthService {
@@ -16,5 +17,11 @@ export class AuthService {
     @Body(ValidationPipe) createUserDto: CreateUserDto,
   ): Promise<User> {
     return await this.userRepository.createUser(createUserDto, UserRole.USER);
+  }
+
+  async signIn(
+    @Body(ValidationPipe) credentialsDto: CredentialsDto,
+  ): Promise<User> {
+    return await this.userRepository.checkCredentials(credentialsDto);
   }
 }
