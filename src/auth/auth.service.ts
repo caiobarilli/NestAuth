@@ -1,4 +1,4 @@
-import { Body, ValidationPipe, Injectable } from '@nestjs/common';
+import { Body, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRole } from '@/users/user-roles.enum';
 import { User } from '@/users/entities/user.entity';
@@ -13,15 +13,11 @@ export class AuthService {
     private userRepository: UserRepository,
   ) {}
 
-  async signUp(
-    @Body(ValidationPipe) createUserDto: CreateUserDto,
-  ): Promise<User> {
+  async signUp(@Body() createUserDto: CreateUserDto): Promise<User> {
     return await this.userRepository.createUser(createUserDto, UserRole.USER);
   }
 
-  async signIn(
-    @Body(ValidationPipe) credentialsDto: CredentialsDto,
-  ): Promise<User> {
+  async signIn(@Body() credentialsDto: CredentialsDto): Promise<User> {
     return await this.userRepository.checkCredentials(credentialsDto);
   }
 }

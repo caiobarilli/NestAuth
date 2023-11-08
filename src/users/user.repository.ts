@@ -13,6 +13,14 @@ export class UserRepository extends Repository<User> {
     super(User, dataSource.createEntityManager());
   }
 
+  async findByEmail(email: string): Promise<User | null> {
+    const user = await this.findOne({
+      where: { email },
+    });
+
+    return user || null;
+  }
+
   async createUser(
     createUserDto: CreateUserDto,
     role: UserRole,
@@ -36,10 +44,6 @@ export class UserRepository extends Repository<User> {
         'Erro ao salvar o usuário no banco de dados',
       );
     }
-  }
-
-  async findByEmail(email: string): Promise<User | null> {
-    return this.findOne({ where: { email } });
   }
 
   async checkCredentials(credentialsDto: CredentialsDto): Promise<User> {

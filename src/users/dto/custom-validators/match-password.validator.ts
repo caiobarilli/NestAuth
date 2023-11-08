@@ -21,7 +21,6 @@ export function isMatchPassword(validationOptions?: ValidationOptions) {
       target: object.constructor,
       propertyName: propertyName,
       options: validationOptions,
-      constraints: [],
       validator: isMatchPasswordConstraint,
     });
   };
