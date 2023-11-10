@@ -13,14 +13,6 @@ export class UserRepository extends Repository<User> {
     super(User, dataSource.createEntityManager());
   }
 
-  async findByEmail(email: string): Promise<User | null> {
-    const user = await this.findOne({
-      where: { email },
-    });
-
-    return user || null;
-  }
-
   async createUser(
     createUserDto: CreateUserDto,
     role: UserRole,

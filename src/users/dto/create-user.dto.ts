@@ -15,7 +15,13 @@ export class CreateUserDto {
   @MaxLength(200, {
     message: 'O endereço de email deve ter menos de 200 caracteres',
   })
-  @isUnique({ tableName: 'user', column: 'email' })
+  @isUnique(
+    {
+      tableName: 'user',
+      column: 'email',
+    },
+    { message: 'O endereço de email já está em uso' },
+  )
   email: string;
 
   @IsNotEmpty({
