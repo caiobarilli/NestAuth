@@ -3,7 +3,7 @@ import { DataSource, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { CredentialsDto } from './dto/credetials.dto';
-import { UserRole } from './user-roles.enum';
+import { UserRole } from './enums/user-roles.enum';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 
