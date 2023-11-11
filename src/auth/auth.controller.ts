@@ -1,9 +1,10 @@
-import { Controller, Post, Body, Get, UseGuards, Req } from '@nestjs/common';
-import { CreateUserDto } from '@/users/dto/create-user.dto';
-import { CredentialsDto } from '@/users/dto/credetials.dto';
+import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { User } from '@/users/entities/user.entity';
-import { AuthGuard } from '@nestjs/passport';
+import { CreateUserDto } from '@/users/dto/create-user.dto';
+import { CredentialsDto } from '@/users/dto/credetials.dto';
+import { GetUser } from './decorators/get-user.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -28,7 +29,7 @@ export class AuthController {
 
   @Get('/me')
   @UseGuards(AuthGuard())
-  getMe(@Req() req): User {
-    return req.user;
+  getMe(@GetUser() user: User): User {
+    return user;
   }
 }
