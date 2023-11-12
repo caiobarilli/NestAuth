@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 import { User } from '@/users/entities/user.entity';
 import { CreateUserDto } from '@/users/dto/create-user.dto';
 import { CredentialsDto } from '@/users/dto/credetials.dto';
-import { GetUser } from './decorators/get-user.decorator';
+import { GetUser } from '@/users/decorators/get-user.decorator';
 
 @Controller('auth')
 export class AuthController {
