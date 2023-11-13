@@ -10,11 +10,6 @@ import { FindUsersQueryDto } from './dto/find-users.dto';
 
 @Injectable()
 export class UserRepository extends Repository<User> {
-  /**
-   * This constructor is used to inject the EntityManager
-   * @constructor
-   * @param {DataSource} dataSource
-   */
   constructor(private dataSource: DataSource) {
     super(User, dataSource.createEntityManager());
   }
@@ -106,7 +101,9 @@ export class UserRepository extends Repository<User> {
     queryDto: FindUsersQueryDto,
   ): Promise<{ users: User[]; total: number }> {
     queryDto.status = queryDto.status === undefined ? true : queryDto.status;
+    queryDto.page = queryDto.page === undefined ? 1 : queryDto.page;
     queryDto.page = queryDto.page < 1 ? 1 : queryDto.page;
+    queryDto.limit = queryDto.limit === undefined ? 10 : queryDto.limit;
     queryDto.limit = queryDto.limit > 90 ? 90 : queryDto.limit;
 
     const { email, name, status, role } = queryDto;
@@ -117,8 +114,8 @@ export class UserRepository extends Repository<User> {
     addWhereCondition(query, 'name', name, 'ILIKE');
     addWhereCondition(query, 'role', role);
 
-    // query.skip((queryDto.page - 1) * queryDto.limit);
-    // query.take(+queryDto.limit);
+    query.skip((queryDto.page - 1) * queryDto.limit);
+    query.take(+queryDto.limit);
     query.orderBy(queryDto.sort ? JSON.parse(queryDto.sort) : undefined);
     query.select(['user.name', 'user.email', 'user.role', 'user.status']);
 
