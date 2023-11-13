@@ -108,6 +108,7 @@ export class UserRepository extends Repository<User> {
 
     const { email, name, status, role } = queryDto;
     const query = this.createQueryBuilder('user');
+
     query.where('user.status = :status', { status });
 
     addWhereCondition(query, 'email', email, 'ILIKE');

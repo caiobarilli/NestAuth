@@ -27,6 +27,28 @@ import { FindUsersQueryDto } from './dto/find-users.dto';
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
+  @Get()
+  @Role(UserRole.ADMIN)
+  @UseGuards(AuthGuard(), RolesGuard)
+  async findUsers(@Query() query: FindUsersQueryDto) {
+    const result = await this.usersService.findUsers(query);
+    return {
+      result,
+      message: 'Usuários encontrados',
+    };
+  }
+
+  @Get(':id')
+  @Role(UserRole.ADMIN)
+  @UseGuards(AuthGuard(), RolesGuard)
+  async findeUserById(@Param('id') id): Promise<ReturnUserDto> {
+    const user = await this.usersService.findUserById(id);
+    return {
+      user,
+      message: 'Usuário encontrado com sucesso',
+    };
+  }
+
   @Post()
   @Role(UserRole.ADMIN)
   @UseGuards(AuthGuard(), RolesGuard)
@@ -37,16 +59,6 @@ export class UsersController {
     return {
       user,
       message: 'Administrador cadastrado com sucesso',
-    };
-  }
-
-  @Role(UserRole.ADMIN)
-  @Get(':id')
-  async findeUserById(@Param('id') id): Promise<ReturnUserDto> {
-    const user = await this.usersService.findUserById(id);
-    return {
-      user,
-      message: 'Usuário encontrado com sucesso',
     };
   }
 
@@ -68,21 +80,11 @@ export class UsersController {
 
   @Delete(':id')
   @Role(UserRole.ADMIN)
+  @UseGuards(AuthGuard(), RolesGuard)
   async deleteUser(@Param('id') id: string) {
     await this.usersService.deleteUser(id);
     return {
       message: 'Usuário removido com sucesso',
-    };
-  }
-
-  @Get()
-  @Role(UserRole.ADMIN)
-  @UseGuards(AuthGuard(), RolesGuard)
-  async findUsers(@Query() query: FindUsersQueryDto) {
-    const result = await this.usersService.findUsers(query);
-    return {
-      result,
-      message: 'Usuários encontrados',
     };
   }
 }

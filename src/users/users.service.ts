@@ -49,15 +49,19 @@ export class UsersService {
    */
   async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.userRepository.findById(id);
+
     const { name, email, role, status } = updateUserDto;
+
     user.name = name ? name : user.name;
     user.email = email ? email : user.email;
     user.role = role ? role : user.role;
     user.status = status ? status : user.status;
+
     try {
-      await user.save();
+      await this.userRepository.update({ id }, user);
       return user;
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException(
         'Erro ao salvar o usuário no banco de dados',
       );
