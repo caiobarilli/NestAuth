@@ -1,4 +1,9 @@
-import { Body, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Body,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRole } from '@/users/enums/user-roles.enum';
 import { User } from '@/users/entities/user.entity';
@@ -22,19 +27,25 @@ export class AuthService {
       createUserDto,
       UserRole.USER,
     );
-
     const mail = {
       to: user.email,
       from: 'noreply@application.com',
       subject: 'Email de confirmação',
-      template: 'email-confirmation',
+      template: 'templates/emails/email-confirmation',
       context: {
         token: user.confirmationToken,
       },
     };
     await this.mailerService.sendMail(mail);
-
     return user;
+  }
+
+  async confirmEmail(confirmationToken: string): Promise<void> {
+    const result = await this.userRepository.update(
+      { confirmationToken },
+      { confirmationToken: 'NULL', status: true },
+    );
+    if (result.affected === 0) throw new NotFoundException('Token inválido');
   }
 
   async signIn(@Body() credentialsDto: CredentialsDto): Promise<{ token }> {

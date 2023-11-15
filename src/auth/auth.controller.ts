@@ -1,4 +1,12 @@
-import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  UseGuards,
+  Patch,
+  Param,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { User } from '@/users/entities/user.entity';
@@ -17,6 +25,14 @@ export class AuthController {
     await this.authService.signUp(createUserDto);
     return {
       message: 'Cadastro realizado com sucesso',
+    };
+  }
+
+  @Patch(':token')
+  async confirmEmail(@Param('token') token: string) {
+    await this.authService.confirmEmail(token);
+    return {
+      message: 'Email confirmado',
     };
   }
 

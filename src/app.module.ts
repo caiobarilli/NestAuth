@@ -10,7 +10,6 @@ import { AuthModule } from './auth/auth.module';
 import { IsUniqueConstraint } from './users/dto/custom-validators/data-unique.validator';
 import { LoggerInterceptor } from './interceptors /logger.interceptor';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -20,7 +19,6 @@ import { AppController } from './app.controller';
     UsersModule,
     AuthModule,
   ],
-  controllers: [AppController],
   providers: [
     IsUniqueConstraint,
     {
