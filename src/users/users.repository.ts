@@ -2,7 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
-import { CredentialsDto } from './dto/credetials.dto';
+import { CredentialsDto } from '@/auth/dto/credetials.dto';
 import { UserRole } from './enums/user-roles.enum';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
@@ -65,7 +65,7 @@ export class UserRepository extends Repository<User> {
     const { email, password } = credentialsDto;
 
     const user = await this.findOne({
-      where: { email, status: true },
+      where: { email },
     });
 
     if (user && (await user.checkPassword(password))) {
@@ -73,6 +73,22 @@ export class UserRepository extends Repository<User> {
     } else {
       return null;
     }
+  }
+
+  /**
+   * Change user's password
+   * @param {string} id
+   * @param {string} password
+   * @returns {Promise<void>}
+   */
+  async changePassword(id: string, password: string): Promise<void> {
+    const user = await this.findOne({
+      where: { id },
+    });
+    user.salt = await bcrypt.genSalt();
+    user.password = await this.hashPassword(password, user.salt);
+    user.recoverToken = null;
+    await user.save();
   }
 
   /**
@@ -100,46 +116,68 @@ export class UserRepository extends Repository<User> {
   async findUsers(
     queryDto: FindUsersQueryDto,
   ): Promise<{ users: User[]; total: number }> {
+    queryDto = this.queryDtoDefaults(queryDto);
+
+    const query = this.createFindUsersQuery(queryDto);
+
+    const [users, total] = await query.getManyAndCount();
+
+    return { users, total };
+  }
+
+  /**
+   * Adiciona uma condição WHERE dinâmica a uma consulta com base no campo, valor e operador fornecidos.
+   * @param {SelectQueryBuilder<User>} query - O TypeORM SelectQueryBuilder para a entidade 'user'.
+   * @param {string} field - O campo no qual aplicar a condição.
+   * @param {any} value - O valor a ser verificado.
+   * @param {string} [operator='='] - O operador de comparação (o padrão é '=').
+   */
+  addWhereCondition(
+    query: SelectQueryBuilder<User>,
+    field: string,
+    value: any,
+    operator: string = '=',
+  ) {
+    if (value !== undefined && value !== null) {
+      query.andWhere(`user.${field} ${operator} :${field}`, { [field]: value });
+    }
+  }
+
+  /**
+   * Set default values to queryDto
+   * @param {FindUsersQueryDto} queryDto
+   * @returns {FindUsersQueryDto}
+   */
+  queryDtoDefaults(queryDto: FindUsersQueryDto): FindUsersQueryDto {
     queryDto.status = queryDto.status === undefined ? true : queryDto.status;
     queryDto.page = queryDto.page === undefined ? 1 : queryDto.page;
     queryDto.page = queryDto.page < 1 ? 1 : queryDto.page;
     queryDto.limit = queryDto.limit === undefined ? 10 : queryDto.limit;
     queryDto.limit = queryDto.limit > 90 ? 90 : queryDto.limit;
 
+    return queryDto;
+  }
+
+  /**
+   * Create a query to find users
+   * @returns {SelectQueryBuilder<User>}
+   */
+  createFindUsersQuery(queryDto: FindUsersQueryDto): SelectQueryBuilder<User> {
     const { email, name, status, role } = queryDto;
+
     const query = this.createQueryBuilder('user');
 
     query.where('user.status = :status', { status });
 
-    addWhereCondition(query, 'email', email, 'ILIKE');
-    addWhereCondition(query, 'name', name, 'ILIKE');
-    addWhereCondition(query, 'role', role);
+    this.addWhereCondition(query, 'email', email, 'ILIKE');
+    this.addWhereCondition(query, 'name', name, 'ILIKE');
+    this.addWhereCondition(query, 'role', role);
 
     query.skip((queryDto.page - 1) * queryDto.limit);
     query.take(+queryDto.limit);
     query.orderBy(queryDto.sort ? JSON.parse(queryDto.sort) : undefined);
     query.select(['user.name', 'user.email', 'user.role', 'user.status']);
 
-    const [users, total] = await query.getManyAndCount();
-
-    return { users, total };
-  }
-}
-
-/**
- * Adiciona uma condição WHERE dinâmica a uma consulta com base no campo, valor e operador fornecidos.
- * @param {SelectQueryBuilder<User>} query - O TypeORM SelectQueryBuilder para a entidade 'user'.
- * @param {string} field - O campo no qual aplicar a condição.
- * @param {any} value - O valor a ser verificado.
- * @param {string} [operator='='] - O operador de comparação (o padrão é '=').
- */
-function addWhereCondition(
-  query: SelectQueryBuilder<User>,
-  field: string,
-  value: any,
-  operator: string = '=',
-) {
-  if (value !== undefined && value !== null) {
-    query.andWhere(`user.${field} ${operator} :${field}`, { [field]: value });
+    return query;
   }
 }
