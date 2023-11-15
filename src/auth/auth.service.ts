@@ -14,6 +14,7 @@ import { JwtService } from '@nestjs/jwt';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigModule } from '@nestjs/config';
 import { ChangePasswordDto } from './dto/change-password';
+import { randomBytes } from 'crypto';
 ConfigModule.forRoot();
 
 @Injectable()
@@ -37,6 +38,7 @@ export class AuthService {
     );
     const mail = {
       to: user.email,
+      from: 'noreply@application.com',
       subject: 'Email de confirmação',
       template: 'templates/emails/email-confirmation',
       context: {
@@ -81,14 +83,69 @@ export class AuthService {
   }
 
   /**
+   * Send an email to recover user's password
+   * @param {string} email
+   * @returns {Promise<void>}
+   */
+  async sendRecoverPasswordEmail(email: string): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: { email },
+    });
+
+    if (!user)
+      throw new NotFoundException('Não há usuário cadastrado com esse email.');
+
+    user.recoverToken = randomBytes(32).toString('hex');
+    await user.save();
+
+    const mail = {
+      to: user.email,
+      from: 'noreply@application.com',
+      subject: 'Recuperação de senha',
+      template: 'templates/emails/recover-password',
+      context: {
+        url: process.env.FRONTEND_RECOVER_PASS_URL,
+        token: user.recoverToken,
+      },
+    };
+    await this.mailerService.sendMail(mail);
+  }
+
+  /**
    * Change user's password
+   * @param {string} id
+   * @param {ChangePasswordDto} changePasswordDto
+   * @returns {Promise<void>}
    */
   async changePassword(
     id: string,
     changePasswordDto: ChangePasswordDto,
   ): Promise<void> {
     const { password } = changePasswordDto;
-
     await this.userRepository.changePassword(id, password);
+  }
+
+  /**
+   * Reset user's password
+   * @param {string} recoverToken
+   * @param {ChangePasswordDto} changePasswordDto
+   * @returns {Promise<void>}
+   * @throws {NotFoundException}
+   */
+  async resetPassword(
+    recoverToken: string,
+    changePasswordDto: ChangePasswordDto,
+  ): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: { recoverToken },
+      select: ['id'],
+    });
+    if (!user) throw new NotFoundException('Token inválido.');
+
+    try {
+      await this.changePassword(user.id.toString(), changePasswordDto);
+    } catch (error) {
+      throw error;
+    }
   }
 }
