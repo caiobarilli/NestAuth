@@ -1,0 +1,29 @@
+html {
+  font-size: 62.5%;
+}
+
+body {
+  padding-top: 60px;
+  padding-bottom: 40px;
+  font-family: "Roboto", Helvetica, Arial, sans-serif;
+  font-size: 1.2em;
+
+}
+
+.wrap_content
+{
+  text-align: center;
+}
+
+.wrap_content img
+{
+  width: 15rem;
+  max-width: 100%;
+}
+
+.wrap_content p
+{
+  font-size: 3em;
+  font-weight: bold;
+  margin-bottom: 0.5em;
+}
