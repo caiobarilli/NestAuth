@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { MailerModule } from '@nestjs-modules/mailer';
 import { WinstonModule } from 'nest-winston';
+import { mailerConfig } from './config/mailer.config';
 import { typeOrmConfig } from './config/typeorm.config';
 import { winstonConfig } from './config/winston.config';
 import { UsersModule } from './users/users.module';
@@ -14,6 +16,7 @@ import { AppController } from './app.controller';
   imports: [
     TypeOrmModule.forRoot(typeOrmConfig),
     WinstonModule.forRoot(winstonConfig),
+    MailerModule.forRoot(mailerConfig),
     UsersModule,
     AuthModule,
   ],

@@ -6,6 +6,7 @@ import { UserRepository } from '@/users/users.repository';
 import { CreateUserDto } from '@/users/dto/create-user.dto';
 import { CredentialsDto } from '@/users/dto/credetials.dto';
 import { JwtService } from '@nestjs/jwt';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class AuthService {
@@ -13,10 +14,27 @@ export class AuthService {
     @InjectRepository(UserRepository)
     private userRepository: UserRepository,
     private jwtService: JwtService,
+    private mailerService: MailerService,
   ) {}
 
   async signUp(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return await this.userRepository.createUser(createUserDto, UserRole.USER);
+    const user = await this.userRepository.createUser(
+      createUserDto,
+      UserRole.USER,
+    );
+
+    const mail = {
+      to: user.email,
+      from: 'noreply@application.com',
+      subject: 'Email de confirmação',
+      template: 'email-confirmation',
+      context: {
+        token: user.confirmationToken,
+      },
+    };
+    await this.mailerService.sendMail(mail);
+
+    return user;
   }
 
   async signIn(@Body() credentialsDto: CredentialsDto): Promise<{ token }> {
